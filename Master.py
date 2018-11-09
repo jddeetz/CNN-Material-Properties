@@ -15,6 +15,13 @@ import Coordinates2Image as c2i
 import CNNOptimization as cnn_opt
 import SplitData as sd
 
+#Import keras libraries
+from keras import layers
+from keras.layers import Input, Dense, Activation, ZeroPadding3D, BatchNormalization, Flatten, Conv3D
+from keras.layers import AveragePooling3D, MaxPooling3D, Dropout, GlobalMaxPooling3D, GlobalAveragePooling3D
+from keras.models import Model
+from keras import regularizers
+
 #Specify the private key to be used to query the database
 #This is just a string, and you can replace the Private_Key module below with
 #a string for your own personal key
@@ -83,7 +90,16 @@ for entry in entries:
 #Split the dataset into a training set and test set
 X_train,X_test,y_train,y_test = sd.SplitData(images,properties,split=0.3)
 
-#Initiate the CNN model
-#happyModel = cnn_opt.CNNModel(X_train.shape[1:])
-        
-        
+#Initiate and compile the CNN model
+cnn = cnn_opt.CNNModel(X_train.shape[1:])
+cnn.compile('adam', loss='mean_squared_error', metrics=['mae'])
+
+#Train the cnn model
+cnn.fit(X_train, y_train, epochs=100, batch_size=50)
+   
+#Predict the densities of materials given the optimized CNN 
+y_predict = cnn.predict(X_test)
+
+#Summarize the root mean square difference (RMSD)
+RMSD=np.mean((y_predict-y_test)**2)**0.5
+print("The RMSD in density prediction is ",RMSD)

@@ -12,6 +12,8 @@ from os import listdir
 import RetrieveData
 import Get_Properties
 import Coordinates2Image as c2i
+import CNNOptimization as cnn_opt
+import SplitData as sd
 
 #Specify the private key to be used to query the database
 #This is just a string, and you can replace the Private_Key module below with
@@ -77,8 +79,11 @@ for entry in entries:
         
         #Record the image
         images.append(image)
-        
-        
-        
+
+#Split the dataset into a training set and test set
+X_train,X_test,y_train,y_test = sd.SplitData(images,properties,split=0.3)
+
+#Initiate the CNN model
+#happyModel = cnn_opt.CNNModel(X_train.shape[1:])
         
         
